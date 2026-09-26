@@ -1,4 +1,5 @@
 import { useId, useMemo, useRef, useState } from 'react'
+import Bean from './Bean'
 import { beanColor, beanTemp, DROP_MAX, DROP_MIN, FIRST_CRACK, roastFor } from './roast'
 
 const W = 560
@@ -17,16 +18,6 @@ function pathTo(drop: number) {
   for (let t = 0; t <= drop + 1e-6; t += 0.1) pts.push(`${x(t).toFixed(1)},${y(beanTemp(t)).toFixed(1)}`)
   pts.push(`${x(drop).toFixed(1)},${y(beanTemp(drop)).toFixed(1)}`)
   return 'M' + pts.join(' L')
-}
-
-function Bean({ color }: { color: string }) {
-  return (
-    <svg viewBox="0 0 120 150" className="bean" aria-hidden="true">
-      <ellipse cx="60" cy="75" rx="46" ry="62" fill={color} />
-      <path d="M60 16 C 40 50, 80 100, 60 134" stroke="rgba(20,10,5,.55)" strokeWidth="6" fill="none" strokeLinecap="round" />
-      <ellipse cx="42" cy="52" rx="10" ry="20" fill="rgba(255,255,255,.14)" transform="rotate(-18 42 52)" />
-    </svg>
-  )
 }
 
 const fmtTime = (m: number) => {

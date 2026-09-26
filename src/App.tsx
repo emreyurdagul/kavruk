@@ -1,7 +1,13 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import gsap from 'gsap'
 import RoastProfile from './RoastProfile'
+import Loader from './Loader'
+import Bean from './Bean'
+import { useScrollScenes } from './useScrollScenes'
 import { COFFEES, FREE_SHIPPING_FROM, GRINDS, priceFor, tl, type Coffee, type Grind, type Weight } from './data'
 import { beanColor } from './roast'
+
+const HEADLINE = 'Perşembe kavrulur, cumartesi fincanınızda.'
 
 /** Bu haftanın kavrum günü: en yakın perşembe */
 const ROAST_DATE = (() => {
@@ -183,6 +189,21 @@ function Wholesale() {
 }
 
 export default function App() {
+  const [introDone, setIntroDone] = useState(false)
+  const finishIntro = useCallback(() => setIntroDone(true), [])
+  useScrollScenes(introDone)
+  useLayoutEffect(() => {
+    // Başlık açılıştan önce görünüp sonra kaybolmasın: harfler gizli başlar
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) gsap.set('.hero h1 .ch', { opacity: 0 })
+  }, [])
+  useEffect(() => {
+    if (!introDone || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    // Başlık harfleri açıktan koyuya "kavrularak" belirir
+    const tween = gsap.fromTo('.hero h1 .ch',
+      { color: '#c4a86e', y: '0.35em', opacity: 0 },
+      { color: '#2a1b12', y: 0, opacity: 1, duration: 0.7, ease: 'power2.out', stagger: 0.025 })
+    return () => { tween.revert() }
+  }, [introDone])
   const [lines, setLines] = useState<Line[]>([])
   const [cartOpen, setCartOpen] = useState(false)
   const count = useMemo(() => lines.reduce((s, l) => s + l.qty, 0), [lines])
@@ -198,6 +219,8 @@ export default function App() {
 
   return (
     <>
+      <Loader onDone={finishIntro} />
+      <div className="flying-bean" aria-hidden="true"><Bean color={beanColor(0.3)} /></div>
       <header className="site-head" id="top">
         <Wordmark />
         <nav aria-label="Ana menü">
@@ -213,7 +236,13 @@ export default function App() {
       <main>
         <section className="hero">
           <div className="hero-copy">
-            <h1>Perşembe kavrulur, cumartesi fincanınızda.</h1>
+            <h1 aria-label={HEADLINE}>
+              {HEADLINE.split(' ').map((word, w) => (
+                <span className="word" key={w} aria-hidden="true">
+                  {[...word].map((ch, c) => <span className="ch" key={c}>{ch}</span>)}
+                </span>
+              ))}
+            </h1>
             <p>
               Karaköy'deki atölyemizde her hafta 15 kiloluk küçük partilerle kavuruyoruz. Her pakette kavrum
               tarihi yazar; en taze haliyle, üç gün içinde kapınızda.
@@ -233,11 +262,17 @@ export default function App() {
 
         <section className="calendar" id="takvim" aria-labelledby="cal-title">
           <h2 id="cal-title">Siparişten fincana üç gün</h2>
+          <div className="track" aria-hidden="true">
+            <div className="track-fill" />
+            <div className="track-parcel">
+              <svg viewBox="0 0 34 40"><path d="M4 8 h26 l2 30 h-30 z" /><path d="M4 8 l3 -6 h20 l3 6" className="fold" /><circle cx="17" cy="22" r="5" className="seal" /></svg>
+            </div>
+          </div>
           <ol>
-            <li><b>Çarşamba 23.59</b><span>Siparişler kapanır, kavrum listesi çıkar.</span></li>
-            <li><b>Perşembe</b><span>Sabah kavrulur, akşam dinlenmeye bırakılır. Paket üzerine tarih basılır.</span></li>
-            <li><b>Cuma</b><span>Valfli paketlerle kargoya verilir.</span></li>
-            <li><b>Cumartesi</b><span>İstanbul içi teslim. Diğer şehirlere pazartesi.</span></li>
+            <li><b>Çarşamba 23.59</b><span>Siparişler kapanır, kavrum listesi çıkar.</span><em>Sipariş alındı</em></li>
+            <li><b>Perşembe</b><span>Sabah kavrulur, akşam dinlenmeye bırakılır. Paket üzerine tarih basılır.</span><em>Kavruldu</em></li>
+            <li><b>Cuma</b><span>Valfli paketlerle kargoya verilir.</span><em>Kargoda</em></li>
+            <li><b>Cumartesi</b><span>İstanbul içi teslim. Diğer şehirlere pazartesi.</span><em>Kapınızda</em></li>
           </ol>
         </section>
 
@@ -248,6 +283,18 @@ export default function App() {
               Menünüze göre espresso harmanı ve filtre seçkisi hazırlıyoruz. Önce 1 kiloluk deneme paketi
               gönderiyoruz, beğenirseniz haftalık teslimata geçiyoruz.
             </p>
+            <svg className="v60" viewBox="0 0 220 230" aria-hidden="true">
+              <g className="steam">
+                <path d="M84 96 C 70 76, 98 62, 84 40 S 92 10, 86 0" />
+                <path d="M110 96 C 96 72, 126 58, 110 34 S 118 8, 112 -4" />
+                <path d="M136 96 C 124 78, 150 64, 136 42 S 142 14, 138 2" />
+              </g>
+              <path className="cone" d="M50 104 h120 l-34 58 h-52 z" />
+              <path className="cone-rib" d="M92 112 l12 44 M110 112 v44 M128 112 l-12 44" />
+              <rect className="collar" x="78" y="162" width="64" height="8" rx="2" />
+              <path className="server" d="M70 172 h80 v34 a18 18 0 0 1 -18 18 h-44 a18 18 0 0 1 -18 -18 z" />
+              <rect className="coffee" x="74" y="190" width="72" height="16" rx="3" />
+            </svg>
           </div>
           <Wholesale />
         </section>

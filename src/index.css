@@ -235,3 +235,58 @@ select:focus-visible, input:focus-visible { border-color: var(--cherry); outline
   .calendar ol { grid-template-columns: 1fr; }
   .site-foot .concept { margin-left: 0; }
 }
+
+/* ── Açılış: tamburda kavrulan çekirdek ─ */
+.loader {
+  position: fixed; inset: 0; z-index: 50; display: grid; place-items: center;
+  background: var(--roast); color: var(--green-bean);
+}
+.loader-drum { position: absolute; width: min(300px, 70vw); animation: drum 2.4s linear infinite; }
+.loader-drum circle { fill: none; stroke: rgba(220,223,200,.22); stroke-width: 2; stroke-dasharray: 6 8; }
+.loader-drum line { stroke: rgba(220,223,200,.35); stroke-width: 3; stroke-linecap: round; }
+@keyframes drum { to { transform: rotate(360deg); } }
+.loader-bean { position: relative; width: 84px; }
+.loader-bean-svg { width: 100%; display: block; }
+.loader-cracks { position: absolute; inset: -12px; width: calc(100% + 24px); opacity: 0; overflow: visible; }
+.loader-cracks path { stroke: var(--crack); stroke-width: 5; stroke-linecap: round; fill: none; }
+.loader-meta { position: absolute; top: calc(50% + min(170px, 40vw)); text-align: center; }
+.loader-meta span { font: 700 40px/1 var(--display); font-variation-settings: 'wdth' 78; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.loader-meta p { font: 500 17px var(--display); color: #b9b39c; margin-top: 6px; }
+
+/* Başlık harfleri (kavrulma efekti App'te) */
+.hero h1 .word { display: inline-block; white-space: nowrap; margin-right: 0.22em; }
+.hero h1 .ch { display: inline-block; }
+
+/* Hero'dan rafa düşen çekirdek */
+.flying-bean { position: absolute; top: 0; left: 0; width: 34px; margin: -21px 0 0 -17px; z-index: 5; pointer-events: none; opacity: 0; }
+.flying-bean .bean { width: 100%; }
+
+/* Kavrum takvimi yolu */
+.track { position: relative; height: 6px; background: rgba(42,27,18,.14); border-radius: 99px; margin: 8px 0 38px; }
+.track-fill { position: absolute; inset: 0; transform-origin: left; background: linear-gradient(90deg, #c4a86e, var(--cinnamon) 35%, #6b3a1f 70%, var(--roast)); border-radius: 99px; transform: scaleX(0); }
+.track-parcel { position: absolute; top: -34px; left: 0; width: 34px; transform: translateX(-50%); }
+.track-parcel svg { width: 100%; display: block; }
+.track-parcel path { fill: var(--kraft); stroke: #9a7550; stroke-width: 1.5; }
+.track-parcel .fold { fill: #b3895c; }
+.track-parcel .seal { fill: var(--cherry); }
+.calendar li { border-top: 0; padding-top: 0; }
+.calendar li em { font: 600 14px var(--display); font-style: normal; color: var(--cherry); opacity: 0; transform: translateY(4px); transition: opacity .25s, transform .25s; }
+.calendar li.passed em { opacity: 1; transform: none; }
+.calendar li b { transition: color .25s; }
+.calendar li:not(.passed) b { color: var(--roast-soft); }
+
+/* V60 ve buhar */
+.v60 { width: 220px; margin-top: 36px; overflow: visible; }
+.v60 .steam path { fill: none; stroke: rgba(220,223,200,.55); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 120; }
+.v60 .cone { fill: #efe9dc; }
+.v60 .cone-rib { stroke: rgba(42,27,18,.18); stroke-width: 2; }
+.v60 .collar { fill: #d9d2c2; }
+.v60 .server { fill: rgba(220,223,200,.14); stroke: rgba(220,223,200,.45); stroke-width: 2; }
+.v60 .coffee { fill: #5a3620; }
+
+@media (prefers-reduced-motion: reduce) {
+  .loader-drum { animation: none; }
+  .calendar li:not(.passed) b { color: inherit; }
+  .calendar li em { opacity: 1; transform: none; }
+}
+@media (max-width: 600px) { .v60 { width: 170px; } }
